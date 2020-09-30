@@ -1,7 +1,35 @@
 const express=require('express');
 const router=express.Router();
 const mongoose =require('mongoose');
-const Product=require('../models/product')
+const Product=require('../models/product');
+const multer = require('multer');
+//const upload =multer({dest:'upload/'})
+const storage = multer.diskStorage({
+  destination: function(req, file, cb) {
+    cb(null, './upload/images/');
+  },
+  filename: function(req, file, cb) {
+    cb(null, new Date().toISOString() + file.originalname);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  // reject a file
+  if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1024 * 1024 * 5
+  },
+  fileFilter: fileFilter
+});
+
 
 
 router.get('/',(req,res,next)=>{
@@ -42,15 +70,16 @@ res.status(500).json({
 });
 });
 
-router.post('/', (req, res, next) => {
+router.post('/',upload.single('productImage'), (req, res, next) => {
     //  const products = {
     //     name: req.body.name,
     //     price: req.body.price
     // };
-    const product =new Product({
+     const product =new Product({
        _id: new mongoose.Types.ObjectId(),
        name: req.body.name,
-       price: req.body.price
+       price: req.body.price,
+       productImage: req.file.path 
     });
     product
         .save()
@@ -85,11 +114,19 @@ router.get('/:productId',(req,res,next)=>{
         doc => {
             console.log("from database",doc);
           
-            if(doc){
-                res.status(200).json(doc);
-            }else{
-                 res.status(404).json({message: 'No validentry found for this id'});
-            }
+            if (doc) {
+                res.status(200).json({
+                    product: doc,
+                    request: {
+                        type: 'GET',
+                        url: 'http://localhost:3000/products'
+                    }
+                });
+              } else {
+                res
+                  .status(404)
+                  .json({ message: "No valid entry found for provided ID" });
+              }
         }
     ).catch(
         err => {console.log(err);

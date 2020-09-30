@@ -15,12 +15,14 @@ mongoose.connection.on('connected', () => {
 });
 
 mongoose.connection.on('error', (err) => {
-    console.log('error: ' + err);
+   // console.log('error: ' + err);
+    
 });
 //=================================================================
 
 const productRoutes= require('./api/routes/product');
-
+const orderRoutes= require('./api/routes/order');
+const userRoutes= require('./api/routes/user');
  
 
 app.use(morgan('dev'));
@@ -32,7 +34,9 @@ app.use(bodyParser.json());
 
 
 //Routes which should handle request
-app.use('/products',productRoutes)
+app.use('/products',productRoutes);
+app.use('/user',userRoutes);
+app.use('/orders',orderRoutes);
 app.use((req, res, next) => {
     res.header( 'Access-Control-Allow-Oigin','*');
     res.header(
