@@ -2,24 +2,25 @@ const mongoose=require('mongoose');
 const bcrypt = require('bcryptjs');
 const ObjectId = mongoose.Schema.Types.ObjectId;
 
-const productSchema=mongoose.Schema({
+const userSchema=mongoose.Schema({
  
-firstName: {
-    type: String,
-    required: true,
-    trim: true
-},
-lastName: {
-    type: String,
-    required: true,
-    trim: true
-},
+// firstName: {
+//     type: String,
+//     required: true,
+//     trim: true
+// },
+// lastName: {
+//     type: String,
+//     required: true,
+//     trim: true
+// },
 email: {
     type: String,
     index: true,
     unique: true,
     required: true,
     lowercase: true,
+    match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/,
     trim: true
 },
 // mobile: {
@@ -30,7 +31,7 @@ email: {
 password: {
     type: String,
     required: true,
-    select: false
+   //    select: false
 },
 auditFields: {
     createdAt: {
@@ -48,4 +49,4 @@ auditFields: {
 }
 });
 
-module.exports=mongoose.model('user',productSchema);
+module.exports=mongoose.model('user',userSchema);
